@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: transaction-service-config
+data:
+  application.yml: |
+    server:
+      port: 8080
+    spring:
+      application:
+        name: transaction-service
+      datasource:
+        url: jdbc:postgresql://transaction-postgres:5432/transactiondb
+        username: transactionuser
+        password: transactionpass
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: validate
+        show-sql: false
+        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+      kafka:
+        bootstrap-servers: transaction-kafka:9092
+        consumer:
+          group-id: transaction-service-group
+          auto-offset-reset: earliest
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+          properties:
+            spring.json.trusted.packages: ebanking.model
+      security:
+        jwt:
+          secret: ${JWT_SECRET}
+          expiration-in-ms: 3600000
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,metrics,prometheus,info
+      metrics:
+        export:
+          prometheus:
+            enabled: true
+    springdoc:
+      api-docs:
+        path: /v3/api-docs
+      swagger-ui:
+        path: /swagger-ui.html

@@ -1,0 +1,22 @@
+<configuration scan="true">
+    <!-- Console Appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- Kafka & Hibernate Log Levels -->
+    <logger name="org.apache.kafka" level="WARN" />
+    <logger name="org.springframework.kafka" level="INFO" />
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" />
+
+    <!-- Application-specific Logger -->
+    <logger name="ebanking" level="DEBUG" />
+</configuration>

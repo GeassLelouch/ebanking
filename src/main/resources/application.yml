@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: transaction-service
+
+  # =========== 資料庫設定（PostgreSQL） ===========
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/ebanking
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+
+  # =========== Kafka 設定 ===========
+  kafka:
+    #bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: transaction-service-group
+      auto-offset-reset: earliest
+#      key-deserializer:   org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer:   org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class:   org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer		
+        spring.json.trusted.packages: ebanking.model
+        spring.json.value.default.type: ebanking.model.TransactionEntity
+
+  # =========== Security (JWT) ===========
+  security:
+    jwt:
+      private-key: ${JWT_PRIVATE_KEY}
+      public-key:  ${JWT_PUBLIC_KEY}
+      expiration-in-ms: 3600000		
+
+  # =========== Actuator & Micrometer ===========
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health,metrics,prometheus,info
+    metrics:
+      export:
+        prometheus:
+          enabled: true
+
+# =========== Logging (Logback) ===========
+logging:
+  config: classpath:logback-spring.xml
+
+# =========== OpenAPI (Swagger) ===========
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
