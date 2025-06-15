@@ -15,7 +15,7 @@
 ---
 
 ## 目錄結構
-
+```text
 e-banking-transaction-service/
 ├── .circleci/ # CircleCI 設定
 ├── k8s/ # Kubernetes 部署檔
@@ -43,7 +43,7 @@ e-banking-transaction-service/
 ├── controller/ # TransactionControllerIntegrationTest
 ├── repository/ # TransactionRepositoryTest
 └── service/ # TransactionServiceTest
-
+```
 
 ---
 
