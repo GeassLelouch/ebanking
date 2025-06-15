@@ -11,6 +11,8 @@ public class TransactionDTO {
     private String currency;
     private LocalDate valueDate;
     private String description;
+    private String payload;                   // JSONB 也可以用 String
+//    private OffsetDateTime createdAt;
     
     private BigDecimal amountInBaseCurrency;
 
@@ -92,6 +94,14 @@ public class TransactionDTO {
 
 	public void setAmountInBaseCurrency(BigDecimal amountInBaseCurrency) {
 		this.amountInBaseCurrency = amountInBaseCurrency;
+	}
+
+	public String getPayload() {
+		return payload;
+	}
+
+	public void setPayload(String payload) {
+		this.payload = payload;
 	}
 
 

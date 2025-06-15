@@ -1,23 +1,41 @@
 package ebanking.model;
 
-import jakarta.persistence.*;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.sql.Types;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+
 @Entity
-@Table(name = "transaction", indexes = {
+@Table(name = "transaction", schema = "core" , indexes = {
         @Index(name = "idx_account_value_date", columnList = "account_iban, value_date")
 })
 public class TransactionEntity {
 
-    @Id
-    @Column(name = "id", length = 36, nullable = false, updatable = false)
-    private String id;
+	 @Id
+	  @GeneratedValue(generator = "UUID")
+	  @GenericGenerator(
+	    name = "UUID",
+	    strategy = "org.hibernate.id.UUIDGenerator"
+	  )
+	  @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
+	  private UUID id;
 
-    @Column(name = "account_iban", length = 34, nullable = false)
+	 @Column(name = "account_iban",
+		        columnDefinition = "char(34)",
+		        nullable = false)
+	 @JdbcTypeCode(Types.CHAR)
     private String accountIban;
 
     @Column(name = "amount", precision = 19, scale = 4, nullable = false)
@@ -43,25 +61,30 @@ public class TransactionEntity {
     public void prePersist() {
         createdAt = Instant.now();
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            id = UUID.randomUUID();
         }
     }
 
     // -------- Getters & Setters --------
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getAccountIban() {
         return accountIban;
     }
 
-    public void setAccountIban(String accountIban) {
+    public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public void setAccountIban(String accountIban) {
         this.accountIban = accountIban;
     }
 

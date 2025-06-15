@@ -1,5 +1,6 @@
 package ebanking.kafka;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -46,9 +47,13 @@ public class TransactionConsumer {
 //    	  customerId從table取，用transactio.account_iban關聯account.iban取得customerId，就能取得customer
 //    	  P-0123456789
     	  
+    	  String idStr = Optional.ofNullable(entity.getId())
+                  .map(UUID::toString)
+                  .orElse(null);
+    	  
 	  	    // 手動 map 成 DTO
 	  	    TransactionDTO dto = new TransactionDTO(
-	  	        entity.getId(),
+	  	    		idStr,
 	  	        entity.getAccountIban(),
 	  	        //customerId
 	  	        null,

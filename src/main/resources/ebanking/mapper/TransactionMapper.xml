@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+           "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ebanking.mapper.TransactionMapper">
+  <!--
+    參數：
+      customerId  必填：客戶 UUID
+      year        必填：西元年，例如 2022
+      month       必填：月份 1~12
+      accountIban 選填：單一 IBAN 過濾
+      page        選填：第幾頁 (從 0 開始)，預設 0
+      size        選填：每頁筆數，預設 20
+  -->
+  <select id="findByCustomerAndMonth"
+          parameterType="map"
+          resultType="ebanking.dto.TransactionDTO">
+    SELECT
+      t.id               AS id,
+      t.account_iban     AS accountIban,
+      a.customer_id      AS customerId,
+      t.amount           AS amount,
+      t.currency         AS currency,
+      t.value_date       AS valueDate,
+      t.description      AS description,
+      t.payload          AS payload,
+      t.created_at       AS createdAt
+    FROM core.transaction t
+    INNER JOIN core.account a
+      ON t.account_iban = a.iban
+    WHERE a.customer_id = #{customerId}
+    <![CDATA[
+      AND t.value_date >= make_date(#{year}, #{month}, 1)
+      AND t.value_date <  make_date(#{year}, #{month}, 1) + INTERVAL '1 month'
+    ]]>
+    
+    <!-- 可選 IBAN 過濾 -->
+    <if test="accountIban != null and accountIban.trim() != ''">
+      AND t.account_iban = #{accountIban}
+    </if>
+    
+    ORDER BY t.value_date DESC, t.id
+    
+    <!-- 分頁 -->
+    LIMIT  #{size}
+    OFFSET #{page} * #{size}
+  </select>
+  
+  <select id="countByCustomerAndMonth"
+        parameterType="map"
+        resultType="int">
+  SELECT COUNT(1)
+    FROM core.transaction t
+    INNER JOIN core.account a
+      ON t.account_iban = a.iban
+   WHERE a.customer_id = #{customerId}
+     AND t.value_date >= make_date(#{year}, #{month}, 1)
+     AND t.value_date &lt; make_date(#{year}, #{month}, 1) + INTERVAL '1 month'
+  <if test="accountIban != null and accountIban.trim() != ''">
+    AND t.account_iban = #{accountIban}
+  </if>
+</select>
+
+</mapper>

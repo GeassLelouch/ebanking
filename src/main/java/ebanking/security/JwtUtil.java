@@ -33,22 +33,14 @@ public class JwtUtil {
 
     // ------------ Key Parsing ------------
     private RSAPrivateKey parsePrivateKey(String pem) throws Exception {
-        String base64 = pem
-//            .replaceAll("-----BEGIN (.*)-----", "")
-//            .replaceAll("-----END (.*)-----", "")
-//            .replaceAll("\\s", "")
-            ;
+        String base64 = pem;
         byte[] bytes = Base64.getDecoder().decode(base64);
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(bytes);
         return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
     private RSAPublicKey parsePublicKey(String pem) throws Exception {
-        String base64 = pem
-//            .replaceAll("-----BEGIN (.*)-----", "")
-//            .replaceAll("-----END (.*)-----", "")
-//            .replaceAll("\\s", "")
-            ;
+        String base64 = pem;
         byte[] bytes = Base64.getDecoder().decode(base64);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(bytes);
         return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(spec);
@@ -58,15 +50,30 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
+    
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
+    
+ // 引入 io.jsonwebtoken.Claims, Function
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = parseClaims(token);
+        final Claims claims = Jwts
+            .parserBuilder()
+            .setSigningKey(publicKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
         return claimsResolver.apply(claims);
     }
+    
+    public String extractUsernameClaim(String token) {
+        return extractClaim(token, claims -> claims.get("username", String.class));
+    }
+
+//    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+//        Claims claims = parseClaims(token);
+//        return claimsResolver.apply(claims);
+//    }
 
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
@@ -94,8 +101,8 @@ public class JwtUtil {
 
     // ------------ Validation ------------
     public boolean validateToken(String token, String userDetailsUsername) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetailsUsername) && !isTokenExpired(token));
+        final String tokenUsername  = extractUsernameClaim(token);
+        return (tokenUsername .equals(userDetailsUsername) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
