@@ -212,10 +212,17 @@
               <artifactId>maven-compiler-plugin</artifactId>
               <version>3.11.0</version>
               <configuration>
+                <!-- 這三行最重要： -->
+                <fork>true</fork>
+                <compilerId>javac</compilerId>
+                <executable>${JAVA_HOME}/bin/javac</executable>
+        
+                <!-- 其餘保持你的目標 Java 版本 -->
                 <source>17</source>
                 <target>17</target>
+                <debug>true</debug>
               </configuration>
-            </plugin>          
+            </plugin>       
             <!-- Spring Boot 打可執行 Jar -->
             <plugin>
               <groupId>org.springframework.boot</groupId>
