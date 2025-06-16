@@ -1,10 +1,8 @@
 version: 2.1
 
 orbs:
-  # Official CircleCI Maven orb – latest release is v2.0.0
-  maven: circleci/maven@2.0.0  # :contentReference[oaicite:0]{index=0}
-  # Official CircleCI Docker orb – latest release is v2.8.2
-  docker: circleci/docker@2.8.2  # :contentReference[oaicite:1]{index=1}
+  maven: circleci/maven@2.0.0
+  docker: circleci/docker@2.8.2  # 可保留原本 2.3.0
 
 jobs:
   build-and-test:
@@ -12,14 +10,11 @@ jobs:
       - image: cimg/openjdk:17.0
     steps:
       - checkout
-      # Restore your Maven dependency cache
-      - maven/cache
-      - run:
-          name: Build & Run Tests
-          command: mvn clean verify -DskipTests=false
-      # Save the updated Maven dependency cache
-      - maven/save
-
+      - maven/with_cache:
+          steps:
+            - run:
+                name: Build & Run Tests
+                command: mvn clean verify
   build-docker-image:
     docker:
       - image: cimg/base:stable
@@ -41,7 +36,6 @@ jobs:
             docker push your_dockerhub_user/transaction-service:latest
 
 workflows:
-  version: 2
   build-test-deploy:
     jobs:
       - build-and-test:
