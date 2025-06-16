@@ -201,20 +201,28 @@
                 </includes>
             </resource>
         </resources>
-		<plugins>
-			<!-- Spring Boot Maven Plugin -->
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<!-- Compiler Plugin: Java 17 -->
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
-				<configuration>
-					<release>${java.version}</release>
-				</configuration>
-			</plugin>
-		</plugins>
+          <plugins>
+            <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.10.1</version>  <!-- 或最新穩定版 -->
+              <configuration>
+                <source>17</source>    
+                <target>17</target>
+              </configuration>
+            </plugin>          
+            <!-- Spring Boot 打可執行 Jar -->
+            <plugin>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-maven-plugin</artifactId>
+              <!-- 插件版本通常和 Boot 版本一致，可省略 <version> -->
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>repackage</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
 	</build>
 </project>

@@ -25,7 +25,7 @@ spring:
   # =========== Kafka 設定 ===========
   kafka:
     #bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ebkafka:9092
     consumer:
       group-id: transaction-service-group
       auto-offset-reset: earliest

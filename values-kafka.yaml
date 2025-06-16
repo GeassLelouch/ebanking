@@ -1,0 +1,38 @@
+# values-kafka.yaml  ── bitnami/kafka ≥ 30.x
+replicaCount: 3
+
+# 如後續想改成 KRaft，只要把 zookeeper.enabled=false 並加上 kraft.* 相關欄位
+zookeeper:
+  replicaCount: 1          # 保持 ZK 模式
+
+listeners:
+  client:                  # 9092 ─ 給應用程式用
+    protocol: PLAINTEXT
+  controller:              # 9093 ─ KRaft / Controller
+    protocol: PLAINTEXT
+  interbroker:             # 9094 ─ broker 之間複製
+    protocol: PLAINTEXT
+
+# 把預設 SCRAM 帳號全部清空 → 「完全無認證」
+sasl:
+  client:
+    users: []
+    passwords: []
+  controller:
+    user: ""
+    password: ""
+  interbroker:
+    user: ""
+    password: ""
+
+# -------------------（進階需要才打開）-------------------
+# 如果你只打算在 K8s 叢集內連線，可以把整段 advertisedListeners 省略；
+# Helm 會自動幫你用 <podName>.<headlessService>:<port> 生成。
+#
+#listeners:
+#  advertisedListeners:
+#    - name: client
+#      bootstrapServers: "ebkafka:9092"
+#    - name: controller
+#      bootstrapServers: "ebkafka-controller-headless.default.svc.cluster.local:9093"
+# -------------------------------------------------------

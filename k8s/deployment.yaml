@@ -14,10 +14,15 @@ spec:
     spec:
       containers:
         - name: transaction-service-container
-          image: your_docker_registry/transaction-service:latest
+          image: k3d-myregistry:5000/transaction-service:latest
+          #image: transaction-service:latest
+          # 不要從 registry 拉
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:
+            - name: SPRING_CONFIG_LOCATION
+              value: "file:/config/application.yml"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -29,14 +34,28 @@ spec:
                   name: transaction-service-secret
                   key: postgres-password
             - name: POSTGRES_HOST
-              value: transaction-postgres
+              value: host.docker.internal
             - name: POSTGRES_PORT
               value: "5432"
-            - name: JWT_SECRET
+            # RSA 公私鑰
+            - name: SPRING_SECURITY_JWT_PUBLIC_KEY
               valueFrom:
                 secretKeyRef:
                   name: transaction-service-secret
-                  key: jwt-secret
+                  key: jwt-public-key
+
+            - name: SPRING_SECURITY_JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: transaction-service-secret
+                  key: jwt-private-key
+
+            # 失效時間
+            - name: SPRING_SECURITY_JWT_EXPIRATION_IN_MS
+              valueFrom:
+                secretKeyRef:
+                  name: transaction-service-secret
+                  key: jwt-expiration-in-ms               
           volumeMounts:
             - name: config-volume
               mountPath: /config/application.yml

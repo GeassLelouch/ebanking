@@ -3,44 +3,64 @@ kind: ConfigMap
 metadata:
   name: transaction-service-config
 data:
-  application.yml: |
+  application.yml: |-
     server:
       port: 8080
+
     spring:
       application:
         name: transaction-service
+
       datasource:
-        url: jdbc:postgresql://transaction-postgres:5432/transactiondb
-        username: transactionuser
-        password: transactionpass
+        url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/ebanking
+        username: ${POSTGRES_USER:postgres}
+        password: ${POSTGRES_PASSWORD:postgres}
         driver-class-name: org.postgresql.Driver
+
       jpa:
         hibernate:
           ddl-auto: validate
-        show-sql: false
-        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+        show-sql: true
+        properties:
+          hibernate:
+            format_sql: true
+        database-platform: ebanking.config.CustomPostgreSQLDialect
+
       kafka:
-        bootstrap-servers: transaction-kafka:9092
+        bootstrap-servers: ebkafka:9092
         consumer:
           group-id: transaction-service-group
           auto-offset-reset: earliest
-          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-          value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+          key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+          value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
           properties:
+            spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+            spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
             spring.json.trusted.packages: ebanking.model
+            spring.json.value.default.type: ebanking.model.TransactionEntity
+
       security:
         jwt:
-          secret: ${JWT_SECRET}
-          expiration-in-ms: 3600000
-    management:
-      endpoints:
-        web:
-          exposure:
-            include: health,metrics,prometheus,info
-      metrics:
-        export:
-          prometheus:
-            enabled: true
+          private-key: ${SPRING_SECURITY_JWT_PRIVATE_KEY}
+          public-key:  ${SPRING_SECURITY_JWT_PUBLIC_KEY}
+          expiration-in-ms: ${SPRING_SECURITY_JWT_EXPIRATION_IN_MS}
+
+      management:
+        endpoints:
+          web:
+            exposure:
+              include: health,metrics,prometheus,info
+        metrics:
+          export:
+            prometheus:
+              enabled: true
+
+    mybatis:
+      mapper-locations: classpath*:ebanking/mapper/*.xml
+
+    logging:
+      config: classpath:logback-spring.xml
+
     springdoc:
       api-docs:
         path: /v3/api-docs
