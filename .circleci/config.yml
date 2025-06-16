@@ -22,6 +22,10 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+        name: Debug env
+          command: |
+            echo "DOCKERHUB_USER is '$DOCKERHUB_USER'"
+      - run:
           name: Login to DockerHub
           command: |
             echo "$DOCKERHUB_PASS" \
