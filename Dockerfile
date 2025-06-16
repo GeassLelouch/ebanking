@@ -3,11 +3,12 @@ FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /build
 # 複製 POM 與原始碼
 COPY pom.xml .
-COPY src ./src
-# 編譯並打包（跳過測試加-DskipTests）
-RUN mvn clean package
+RUN mvn dependency:go-offline -B
 
-# 第二階段：只拷貝 jar 
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+# Stage 2: runtime
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=builder /build/target/transaction-service-*.jar transaction-service.jar
