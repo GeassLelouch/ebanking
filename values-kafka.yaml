@@ -26,8 +26,8 @@ sasl:
     password: ""
 
 # -------------------（進階需要才打開）-------------------
-# 如果你只打算在 K8s 叢集內連線，可以把整段 advertisedListeners 省略；
-# Helm 會自動幫你用 <podName>.<headlessService>:<port> 生成。
+# 如果只打算在 K8s 叢集內連線，可以把整段 advertisedListeners 省略；
+# Helm 會自動幫用 <podName>.<headlessService>:<port> 生成。
 #
 #listeners:
 #  advertisedListeners:

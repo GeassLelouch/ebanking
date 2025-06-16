@@ -19,7 +19,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    #database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     database-platform: ebanking.config.CustomPostgreSQLDialect
 
   # =========== Kafka 設定 ===========
@@ -29,10 +28,6 @@ spring:
     consumer:
       group-id: transaction-service-group
       auto-offset-reset: earliest
-#      key-deserializer:   org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       key-deserializer:   org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
@@ -60,7 +55,6 @@ spring:
           enabled: true
           
 mybatis:
-  # 如果你的 XML 放在 src/main/resources/mapper/*.xml：
   mapper-locations: classpath*:ebanking/mapper/*.xml
 
 # =========== Logging (Logback) ===========
