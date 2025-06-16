@@ -22,18 +22,21 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+          name: Login to DockerHub
+          command: |
+            echo "$DOCKERHUB_PASS" \
+            | docker login --username "$DOCKERHUB_USER" --password-stdin
+      - run:
           name: Build Docker Image
           command: |
-            docker build -t your_dockerhub_user/transaction-service:${CIRCLE_SHA1} .
-      - run:
-          name: Login to DockerHub
-          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+            docker build -t $DOCKERHUB_USER/transaction-service:${CIRCLE_SHA1} .
       - run:
           name: Push to DockerHub
           command: |
-            docker push your_dockerhub_user/transaction-service:${CIRCLE_SHA1}
-            docker tag your_dockerhub_user/transaction-service:${CIRCLE_SHA1} your_dockerhub_user/transaction-service:latest
-            docker push your_dockerhub_user/transaction-service:latest
+            docker push $DOCKERHUB_USER/transaction-service:${CIRCLE_SHA1}
+            docker tag $DOCKERHUB_USER/transaction-service:${CIRCLE_SHA1} \
+                       $DOCKERHUB_USER/transaction-service:latest
+            docker push $DOCKERHUB_USER/transaction-service:latest
 
 workflows:
   build-test-deploy:
