@@ -47,7 +47,7 @@ public class ExchangeRateService {
 
     //當前匯率主幣別，若固定則呼叫此方法
     public BigDecimal getRateToBase(String transactionCurrency) {
-        return getRate(transactionCurrency, "USD");
+        return getRate(transactionCurrency, BASE_CURRENCY);
     }
 
     // RateResponse、內部 Map<String,BigDecimal> rates 等 class 自行定義

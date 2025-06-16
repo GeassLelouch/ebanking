@@ -1,5 +1,6 @@
 package ebanking.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +28,8 @@ public class TransactionController {
     }
 
     @Operation(summary = "分頁查詢指定月份的所有交易 (需攜帶 JWT)")
-    @GetMapping("/transactions")
+    @GetMapping(value = "/transactions",
+    	      produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PagedResponse<TransactionDTO>> getTransactionsByMonth(
             @Parameter(description = "查詢的年份，例如 2022", required = true)
             @RequestParam int year,
@@ -65,6 +67,7 @@ public class TransactionController {
                 		customerId, year, month, page, size, accountIban);
         
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 }

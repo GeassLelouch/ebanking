@@ -8,6 +8,8 @@ public class TransactionDTO {
     private String accountIban;
     private String customerId;
     private BigDecimal amount;
+    private BigDecimal sumAmount;
+    
     private String currency;
     private LocalDate valueDate;
     private String description;
@@ -102,6 +104,14 @@ public class TransactionDTO {
 
 	public void setPayload(String payload) {
 		this.payload = payload;
+	}
+
+	public BigDecimal getSumAmount() {
+		return sumAmount;
+	}
+
+	public void setSumAmount(BigDecimal sumAmount) {
+		this.sumAmount = sumAmount;
 	}
 
 

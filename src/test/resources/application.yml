@@ -2,42 +2,55 @@ server:
   port: 8080
 
 spring:
+  sql:
+    init:
+      schema-locations: classpath:schema.sql
+      mode: always
+      
   application:
     name: transaction-service
 
-  # =========== 資料庫設定（PostgreSQL，使用 ebanking 資料庫 & core schema） ===========
+  # =========== 資料庫設定（PostgreSQL） ===========
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/ebanking?currentSchema=core
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/ebanking
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
+        default_schema: core
         format_sql: true
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    database-platform: ebanking.config.CustomPostgreSQLDialect
+  flyway:
+      # test 時也跑 migrations
+      enabled: true
 
   # =========== Kafka 設定 ===========
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    #bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
+    bootstrap-servers: ebkafka:9092
     consumer:
       group-id: transaction-service-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer:   org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
+        spring.deserializer.key.delegate.class:   org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer    
         spring.json.trusted.packages: ebanking.model
+        spring.json.value.default.type: ebanking.model.TransactionEntity
 
-  # =========== Security (JWT) ===========
+# =========== Security (JWT) ===========
   security:
     jwt:
-      private-key: ${JWT_PRIVATE_KEY}
-      public-key:  ${JWT_PUBLIC_KEY}
-      expiration-in-ms: 3600000   
+      private-key: ${SPRING_SECURITY_JWT_PRIVATE_KEY}
+      public-key:  ${SPRING_SECURITY_JWT_PUBLIC_KEY}
+      expiration-in-ms: ${SPRING_SECURITY_JWT_EXPIRATION_IN_MS}
 
   # =========== Actuator & Micrometer ===========
   management:
@@ -49,6 +62,9 @@ spring:
       export:
         prometheus:
           enabled: true
+          
+mybatis:
+  mapper-locations: classpath*:ebanking/mapper/*.xml
 
 # =========== Logging (Logback) ===========
 logging:
