@@ -181,13 +181,12 @@
 		    <version>42.5.1</version>
 		  </dependency>
 		
-		  <!-- （選用）Lombok，讓 DTO/Entity 少寫 Getter/Setter -->
 		  <dependency>
-		    <groupId>org.projectlombok</groupId>
-		    <artifactId>lombok</artifactId>
-		    <version>1.18.26</version>
-		    <scope>provided</scope>
-		  </dependency>	
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.32</version> 
+              <scope>provided</scope>
+            </dependency>
            <dependency>
               <groupId>org.springframework.security</groupId>
               <artifactId>spring-security-test</artifactId>
@@ -220,6 +219,13 @@
                 <source>17</source>
                 <target>17</target>
                 <debug>true</debug>
+                <annotationProcessorPaths>
+                    <path>
+                      <groupId>org.projectlombok</groupId>
+                      <artifactId>lombok</artifactId>
+                      <version>1.18.32</version>
+                    </path>
+                  </annotationProcessorPaths>
               </configuration>
             </plugin>  
             <!-- Spring Boot 打可執行 Jar -->
