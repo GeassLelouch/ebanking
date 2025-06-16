@@ -1,8 +1,10 @@
 version: 2.1
 
 orbs:
-  maven: circleci/maven@4.1.0
-  docker: circleci/docker@2.3.0
+  # Official CircleCI Maven orb – latest release is v2.0.0
+  maven: circleci/maven@2.0.0  # :contentReference[oaicite:0]{index=0}
+  # Official CircleCI Docker orb – latest release is v2.8.2
+  docker: circleci/docker@2.8.2  # :contentReference[oaicite:1]{index=1}
 
 jobs:
   build-and-test:
@@ -10,10 +12,12 @@ jobs:
       - image: cimg/openjdk:17.0
     steps:
       - checkout
+      # Restore your Maven dependency cache
       - maven/cache
       - run:
           name: Build & Run Tests
           command: mvn clean verify -DskipTests=false
+      # Save the updated Maven dependency cache
       - maven/save
 
   build-docker-image:
