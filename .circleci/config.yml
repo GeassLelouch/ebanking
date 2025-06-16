@@ -6,15 +6,18 @@ orbs:
 
 jobs:
   build-and-test:
-    docker:
-      - image: cimg/openjdk:17.0
+    machine:
+      image: ubuntu-2004:202010-01  
     steps:
       - checkout
-      - maven/with_cache:
-          steps:
-            - run:
-                name: Build & Run Tests
-                command: mvn clean verify
+      - run:
+          name: Install Maven 缓存
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y maven
+      - run:
+          name: Run Tests
+          command: mvn clean verify
   build-docker-image:
     docker:
       - image: cimg/base:stable
