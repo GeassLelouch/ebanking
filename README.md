@@ -111,10 +111,8 @@ document/spec.md
 系統的功能循序圖請看:
 document/sequenceDiagram.md
 
-系統的資料庫設計請看:
-document/ERM.md
-
-
+系統的OpenAPI文件請看:
+document/openapi.yaml
 
 
 ### 執行測試
