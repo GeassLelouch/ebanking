@@ -3,7 +3,7 @@
 本專案實現一個微服務 (Java 17 + Spring Boot 3)，主要功能：
 - 從 Kafka 消費交易訊息並儲存到 PostgreSQL
 - 按「帳戶 IBAN + 年月」分頁查詢交易清單
-- 查詢結果中，對每筆交易做匯率換算並回傳當頁總借總貸
+- 查詢結果中，對每筆交易做匯率換算並回傳當頁總借貸金額
 - 採用 JWT 驗證，僅允許帶 Bearer Token 之使用者查詢自己的帳號
 - 整合 Spring Boot Actuator + Micrometer，暴露 Prometheus 指標
 - 日誌使用 Logback，顯示 SQL、Kafka 訊息等
