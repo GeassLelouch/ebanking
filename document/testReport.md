@@ -6,7 +6,7 @@ k8s建立pod成功
 
 api伺服器也成功運作起來無報錯
 
-(../img/runserver_success.jpg)
+![測試流程示意圖](../img/runserver_success.jpg)
 
 
 因為需求寫The user is already authenticated and the API client invoking the transaction API will send a JWT token containing the user’s unique identity key
@@ -15,20 +15,20 @@ api伺服器也成功運作起來無報錯
 
 呼叫login api 拿到token如圖
 
-(../img/login_api.jpg)
+![測試流程示意圖](../img/login_api.jpg)
 
 
 呼叫我的交易分頁查詢 API 但token錯誤的話如圖顯示，將會被拒絕呼叫，回傳403
 
-(../img/Forbidden.jpg)
+![測試流程示意圖](../img/Forbidden.jpg)
 
 
 填入驗證成功的token
-(../img/inserttoken.jpg)
+![測試流程示意圖](../img/inserttoken.jpg)
 
 
 填入查詢條件並成功得到查詢結果
-(../img/query_result.jpg)
+![測試流程示意圖](../img/query_result.jpg)
 
 
 查詢回來資料如下:
@@ -93,31 +93,31 @@ api伺服器也成功運作起來無報錯
 Link the Git repository to a service for continuous integration such as CircleCI and provide the link to the pipeline showing the successful execution of the unit and integration tests.
 
 可以看到每次上傳github都會讓circleCI自動偵測並啟動，如圖
-(../img/query_result.jpg)
+![測試流程示意圖](../img/query_result.jpg)
 
 
 circleCI的步驟有
 1.單元測試&整合測試
 2.測試包docker
 如圖
-(../img/testandbuild.jpg)
+![測試流程示意圖](../img/testandbuild.jpg)
 
 
 測試的步驟繁多並且全部都成功
-(../img/ci_test_detail.jpg)
+![測試流程示意圖](../img/ci_test_detail.jpg)
 
 
 執行spring test 細節如圖
-(../img/maven_verify.jpg)
+![測試流程示意圖](../img/maven_verify.jpg)
 
 
 
 測試包docker 清單，全部都成功
-(../img/build_detail.jpg)
+![測試流程示意圖](../img/build_detail.jpg)
 
 
 丟上duckerHub
-(../img/dockerHub.jpg)
+![測試流程示意圖](../img/dockerHub.jpg)
 
 
 
