@@ -98,84 +98,14 @@ The transactions cover the last ten years and are stored in Kafka with the key b
 我認為尚不需要使用NOSQL或TSDB，經過計算此案例平均為193QPS，峰值算三倍600QPS，postgresql的效能遠足以應付這種量級的查詢，而RDBMS針對分頁式查詢是強項，個人認為可以使用postgresql
 
 
+系統的規格書請看:
+document/spec.md
 
+系統的功能循序圖請看:
+document/sequenceDiagram.md
 
-
-
-```mermaid
-sequenceDiagram
-    %% API 查詢流程
-    actor User
-    participant Auth      as AuthController
-    participant JWT       as JWT Token
-    participant Filter    as JwtAuthenticationFilter
-    participant Controller as TransactionController
-    participant Service   as TransactionService
-    participant Repo      as TransactionRepository
-    participant DB        as PostgreSQL
-    participant RateSvc   as ExchangeRateService
-    participant RateAPI   as External Rate API
-    participant Mapper    as TransactionMapper
-    participant Pager     as PagedResponse
-
-    %% 登入並領取 Token
-    User ->> Auth : login(credentials)
-    Auth -->> JWT  : token
-
-    %% 用 Token 呼叫查交易
-    User ->> Filter     : GET /api/transactions + token
-    Filter ->> Controller: forward request
-
-    Controller ->> Service : getTransactions(params)
-    
-    %% 撈交易資料
-    Service ->> Repo    : findByAccountAndMonth(...)
-    Repo    ->> DB      : SELECT * FROM transaction
-    DB      -->> Repo   : rows
-    Repo    -->> Service: entities
-
-    %% 拿匯率做換算
-    Service ->> RateSvc : getRate(from, to)
-    RateSvc ->> RateAPI : HTTP GET /rate
-    RateAPI-->> RateSvc : rate
-    RateSvc-->> Service : rate
-
-    %% DTO 轉換與分頁
-    Service ->> Mapper : toDTO(entities, rate)
-    Mapper  -->> Service: DTO list
-
-    Service ->> Pager   : buildPage(DTO list, pagination)
-    Pager   -->> User    : paged result
-
-```
-
-
-
-
-
-
-# Kafka 消费时序图
-
-
-```mermaid
-sequenceDiagram
-    participant KafkaTopic   as Kafka Topic
-    participant KafkaConsumer as KafkaConsumerService
-    participant Repo          as TransactionRepository
-    participant DB            as PostgreSQL
-
-    KafkaTopic   ->> KafkaConsumer : onMessage(transactionEntity)
-    KafkaConsumer->> Repo         : save(entity)
-    Repo         ->> DB           : INSERT transaction
-    DB           -->> Repo        : OK
-    Repo         -->> KafkaConsumer: saved
-
-```
-
-
-
-
-
+系統的資料庫設計請看:
+document/ERM.md
 
 
 
@@ -189,7 +119,7 @@ mvn clean test
 
 Repository 測試：TransactionRepositoryTest (Testcontainers PostgreSQL)
 
-整合測試：TransactionControllerIntegrationTest (Testcontainers PostgreSQL + Kafka)
+整合測試：TransactionControllerIntegrationTest (Testcontainers api + PostgreSQL + JWT)
 
 ```
 
