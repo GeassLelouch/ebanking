@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: e-Banking Transaction Service API
+  version: "1.0.0"
+  description: 提供分頁查詢交易紀錄並計算匯率的微服務 API
+servers:
+  - url: http://localhost:8080
+paths:
+  /auth/login:
+    post:
+      summary: 使用者登入並取得 JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /api/transactions:
+    get:
+      summary: 分頁查詢指定月份的所有交易 (需攜帶 JWT)
+      parameters:
+        - name: year
+          in: query
+          description: 查詢的年份，例如 2025
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: query
+          description: 查詢的月份 (1~12)
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: 第幾頁 (從 0 開始)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 每頁筆數
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: accountIban
+          in: query
+          description: 非必填：按單一 IBAN 過濾
+          required: false
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 查詢結果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseTransactionDTO'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AuthRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+    TransactionDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        accountIban:
+          type: string
+        customerId:
+          type: string
+        amount:
+          type: number
+          format: double
+        sumAmount:
+          type: number
+          format: double
+        currency:
+          type: string
+        valueDate:
+          type: string
+          format: date
+        description:
+          type: string
+        payload:
+          type: string
+        amountInBaseCurrency:
+          type: number
+          format: double
+    PagedResponseTransactionDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionDTO'
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        last:
+          type: boolean
+        sumAmountInBaseCurrency:
+          type: number
+          format: double

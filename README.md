@@ -66,7 +66,9 @@ ebanking/
 - Maven 3.8+
 - Docker 
 - PostgreSQL 
-- Kafka 
+- Kafka 3.9.1
+- Scala 2.13
+
 
 ### 設定環境變數 (可選)
 
