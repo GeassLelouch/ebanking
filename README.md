@@ -47,6 +47,9 @@ sequenceDiagram
 
 
 
+有以下四種實現分頁查詢的方式，雖然需求寫，但我認為是指核心系統的資料來源是kafka，不代表查詢也一定要從kafka查詢，因為kafka還是日誌管理，主要是高吞吐量消息發送，分頁查詢不是辦不到，但效能輸給RDBMS，並且考量到kafka可能，以此情境來說，我認為尚不需要使用NOSQL，或是時序資料庫，postgresql的效能足以應付這種量級的查詢
+
+
 # e-Banking Transaction Service (PostgreSQL Edition)
 
 本專案實現一個微服務 (Java 17 + Spring Boot 3)，主要功能：
