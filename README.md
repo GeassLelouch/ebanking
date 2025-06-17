@@ -85,16 +85,23 @@ ebanking/
 - `SPRING_SECURITY_JWT_EXPIRATION_IN_MS`
 
 以下為部分需求內容
+```
 The list of transactions should be consumed from a Kafka topic.
 The transactions cover the last ten years and are stored in Kafka with the key being the transaction ID and the value the JSON representation of the transaction.
+```
 
-雖然以上需求寫查詢資料來源在kafka，但我認為是指核心系統的資料來源在kafka，不代表我的入口網站查詢也一定要從kafka查詢，因為kafka終究是日誌系統，主要是高吞吐量消息發送，kafka也能做到分頁查詢，但效能輸給其他查詢方式，使用體驗上是糟糕的，並且考量到kafka可能權責在核心系統，我無法任意修改進行效能調教，我認為同步資料在別的地方進行查詢也是個方法
+雖然以上需求寫查詢資料來源在kafka，但我認為是指核心系統的資料來源在kafka，不代表我的服務查詢也一定要從kafka查詢，因為kafka終究是日誌系統，主要是高吞吐量消息發送，kafka也能做到分頁查詢，但效能輸給其他查詢方式，使用體驗上是糟糕的，並且考量到kafka可能權責在核心系統，我無法任意修改進行效能調教，我認為同步資料在別的地方進行查詢也是個方法
 
 以此情境來說，有以下四種實現分頁查詢的方式
+
 1.kafka直接查詢
+
 2.RDBMS
+
 3.noSQL
+
 4.TSDB
+
 我認為尚不需要使用NOSQL或TSDB，經過計算此案例平均為193QPS，峰值算三倍600QPS，postgresql的效能遠足以應付這種量級的查詢，而RDBMS針對分頁式查詢是強項，個人認為可以使用postgresql
 
 
