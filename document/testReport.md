@@ -84,17 +84,19 @@ api伺服器也成功運作起來無報錯
 
 
 因為需求是會呼叫第三方api取得當天匯率並計算本位幣金額再進行加總
-所以先寫死假想的取得匯率
+所以先寫死假想的取得匯率  
 "EUR", new BigDecimal("34.00"),
 "GBP", new BigDecimal("40.06"),
 "CHF", new BigDecimal("36.40")
 
-可以看到以上三筆匯入或是匯出的外幣交易金額加總會是正確的17165.045
+可以看到以上三筆匯入或是匯出的外幣交易金額加總會是正確的17165.045  
 (-100.25*34)+(-250.75*34)+(300.75.75*40.06)=17165.045
 
 
-需求如下:
+需求如下:  
+```
 Link the Git repository to a service for continuous integration such as CircleCI and provide the link to the pipeline showing the successful execution of the unit and integration tests.
+```
 
 可以看到每次上傳github都會讓circleCI自動偵測並啟動，如圖
 ![測試流程示意圖](../img/query_result.jpg)
