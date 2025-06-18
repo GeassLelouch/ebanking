@@ -31,7 +31,7 @@ import java.time.LocalDate;
 import ebanking.dto.TransactionDTO;
 
 @Slf4j
-@SpringBootApplication
+@Configuration
 public class ReactiveBatchWriteApp {
 
     public static void main(String[] args) {
