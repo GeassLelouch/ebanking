@@ -106,13 +106,13 @@ The transactions cover the last ten years and are stored in Kafka with the key b
 
 
 系統的規格書請看:
-document/spec.md
+[後端設計](document/spec.md)
 
 系統的功能循序圖請看:
-document/sequenceDiagram.md
+[後端設計](document/sequenceDiagram.md)
 
 系統的OpenAPI文件請看:
-document/openapi.yaml
+[後端設計](document/openapi.md)
 
 
 ### 執行測試
