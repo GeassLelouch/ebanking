@@ -126,7 +126,7 @@ Security (authentication and authorization)
 ```
 JWT採用RSA 非對稱加密用私鑰提高安全性，比預設的對稱式加密更安全
 
-建議所有的文件在github 網頁瀏覽器直接觀看，可直接呈現圖片以及UML圖表
+建議所有的文件在github 網頁瀏覽器直接觀看，可直接呈現圖片以及UML圖表  
 系統的規格書請看:
 [規格書](document/spec.md)
 
