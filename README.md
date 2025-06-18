@@ -137,7 +137,7 @@ JWT採用RSA 非對稱加密用私鑰提高安全性，比預設的對稱式加�
 [kafka流程圖](document/kafka_spec.md)
 
 系統的OpenAPI文件請看:
-[OpenAPI文件](document/openapi.md)
+[OpenAPI文件](document/openapi.yaml)
 
 
 ### 執行測試
