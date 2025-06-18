@@ -115,7 +115,7 @@ The transactions cover the last ten years and are stored in Kafka with the key b
 ### 端到端反應式批次寫入
 
 使用Spring Boot Reactive + Reactor Kafka + R2DBC 
-設計邏輯寫入規則為兩項
+設計邏輯寫入規則為兩項  
 1.500 筆滿就寫   
 2.500ms 達到就寫  
 滿足其中一種便會啟動反應式寫入，預計在postgresql能承受一秒一千筆的寫入，超過此需求300 筆/s 量級。 
