@@ -70,19 +70,21 @@ ebanking/
 - Scala 2.13
 
 
-### 設定環境變數 (可選)
-
+### 設定環境變數 
+```
+#### 資料庫連線內容
 - `POSTGRES_HOST` 
 - `POSTGRES_PORT` 
 - `POSTGRES_USER` 
 - `POSTGRES_PASSWORD`
-### KAFKA伺服器
+#### KAFKA伺服器
 - `KAFKA_BOOTSTRAP_SERVERS`
-### JWT 金鑰（讀檔、RSA）
+#### JWT 金鑰（讀檔、RSA）
 - `SPRING_SECURITY_JWT_PRIVATE_KEY`
 - `SPRING_SECURITY_JWT_PUBLIC_KEY`
-### JWT 過期時間（毫秒）
+#### JWT 過期時間（毫秒）
 - `SPRING_SECURITY_JWT_EXPIRATION_IN_MS`
+```
 
 以下為部分需求內容
 ```
@@ -104,6 +106,10 @@ The transactions cover the last ten years and are stored in Kafka with the key b
 
 我認為尚不需要使用NOSQL或TSDB，經過計算此案例平均為193QPS，峰值算三倍600QPS，postgresql的效能遠足以應付這種量級的查詢，而RDBMS針對分頁式查詢是強項，個人認為可以使用postgresql
 
+```
+Security (authentication and authorization)
+```
+JWT採用RSA 非對稱加密用私鑰提高安全性，比預設的對稱式加密更安全
 
 系統的規格書請看:
 [規格書](document/spec.md)
