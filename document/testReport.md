@@ -99,7 +99,7 @@ Link the Git repository to a service for continuous integration such as CircleCI
 ```
 
 可以看到每次上傳github都會讓circleCI自動偵測並啟動，如圖
-![測試流程示意圖](../img/query_result.jpg)
+![測試流程示意圖](../img/ci_list.jpg)
 
 
 circleCI的步驟有  
