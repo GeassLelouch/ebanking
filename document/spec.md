@@ -12,12 +12,11 @@
 ```
  design and implement a reusable REST API for returning the paginated list of money account transactions created in an arbitrary calendar month for a given customer who is logged-on in the portal. For each transaction ‘page’ return the total credit and debit values at the current exchange rate (from the third-party provider). 
 ```
-在實際上查詢的時候只會用到account以及transaction，但會設定四個表格的原因如下:
-Customer:每個銀行客戶會開一個帳號進行管理
-Account:一個客戶可以有多個貨幣帳號
-transaction:每筆交易的詳細記錄，與Account是一對多的關係
-users:用於驗證token是否為合法用戶，並且role紀錄在此，與Customer分開是因為用戶組可以有多組權限拆分
-
+在實際上查詢的時候只會用到account以及transaction，但會設定四個表格的原因如下:  
+Customer:每個銀行客戶會開一個帳號進行管理  
+Account:一個客戶可以有多個貨幣帳號  
+transaction:每筆交易的詳細記錄，與Account是一對多的關係  
+users:用於驗證token是否為合法用戶，並且role紀錄在此，與Customer分開是因為用戶組可以有多組權限拆分  
 
 ---
 
