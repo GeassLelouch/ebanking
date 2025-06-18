@@ -1,4 +1,4 @@
-# e-Banking Transaction Service — 系統分析規格書
+# 系統分析規格書
 
 ## 1. 系統概要
 
