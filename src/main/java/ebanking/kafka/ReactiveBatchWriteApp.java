@@ -5,20 +5,32 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Value;
 
-import reactor.core.publisher.Mono;
-import reactor.core.Disposable;
+import lombok.extern.slf4j.Slf4j;
 
-import reactor.kafka.receiver.ReceiverOptions;
+import reactor.core.Disposable;
+import reactor.core.publisher.Mono;
+
 import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.receiver.ReceiverRecord;
 
 import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.r2dbc.core.DatabaseClient;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import ebanking.dto.TransactionDTO;
 
+@Slf4j
 @SpringBootApplication
 public class ReactiveBatchWriteApp {
 
@@ -26,10 +38,11 @@ public class ReactiveBatchWriteApp {
         SpringApplication.run(ReactiveBatchWriteApp.class, args);
     }
 
-    // 1) 建立 KafkaReceiver<String, TransactionDTO>
+    // 1) 建立 ReceiverOptions<String, TransactionDTO>
     @Bean
     public ReceiverOptions<String, TransactionDTO> kafkaReceiverOptions(
             @Value("${spring.kafka.bootstrap-servers}") String brokers) {
+
         Map<String, Object> props = Map.of(
             ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers,
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
@@ -38,47 +51,54 @@ public class ReactiveBatchWriteApp {
             JsonDeserializer.TRUSTED_PACKAGES, "*",
             ConsumerConfig.GROUP_ID_CONFIG, "tx-group"
         );
-        ReceiverOptions<String, TransactionDTO> opts = ReceiverOptions.create(props);
-        return opts.subscription(List.of("transactions-topic"));
+
+        return ReceiverOptions.<String, TransactionDTO>create(props)
+                .subscription(List.of("transactions-topic"));
     }
 
+    // 2) 建立唯一的 KafkaReceiver bean
     @Bean
-    public Receiver<String, TransactionDTO> kafkaReceiver(
+    public KafkaReceiver<String, TransactionDTO> kafkaReceiver(
             ReceiverOptions<String, TransactionDTO> opts) {
-        return Receiver.create(opts);
-    }
-
-    // 2) 注入 R2DBC DatabaseClient
-    @Bean
-    public DatabaseClient databaseClient(ConnectionFactory cf) {
-        return DatabaseClient.create(cf);
+        return KafkaReceiver.create(opts);
     }
 
     // 3) 啟動反應式批次寫入
     @Bean
-    public Disposable inboundPipeline(Receiver<String, TransactionDTO> receiver,
+    public Disposable inboundPipeline(KafkaReceiver<String, TransactionDTO> receiver,
                                       DatabaseClient dbClient) {
+
         int batchSize = 500;
         Duration maxDelay = Duration.ofMillis(500);
 
-        return receiver.receive()
+        return receiver.receive() // Flux<ReceiverRecord<String,TransactionDTO>>
             .map(ReceiverRecord::value)                         // Flux<TransactionDTO>
-            .bufferTimeout(batchSize, maxDelay)                 // size- or time-based
-            .filter(batch -> !batch.isEmpty())                  // 跳過空 batch
+            .bufferTimeout(batchSize, maxDelay)                 // 批次
+            .filter(batch -> !batch.isEmpty())
             .flatMap(batch -> batchInsert(dbClient, batch))     // 寫入 DB
-            .subscribe(count -> 
-                log.info("已寫入 batch, 總筆數 = {}", count),
-                err -> log.error("寫入失敗", err)
+            .subscribe(
+                count -> log.info("已寫入 batch, 總筆數 = {}", count),
+                err   -> log.error("寫入失敗", err)
             );
     }
 
-    // 4) 批次組合 UNNEST 陣列一次入庫
+    // 4) 批次 UNNEST 寫入
     private Mono<Integer> batchInsert(DatabaseClient client, List<TransactionDTO> batch) {
-        List<UUID>         ids         = batch.stream().map(TransactionDTO::getId).toList();
-        List<BigDecimal>   amounts     = batch.stream().map(TransactionDTO::getAmount).toList();
-        List<String>       currencies  = batch.stream().map(TransactionDTO::getCurrency).toList();
-        List<LocalDate>    dates       = batch.stream().map(TransactionDTO::getValueDate).toList();
-        List<String>       descs       = batch.stream().map(TransactionDTO::getDescription).toList();
+        List<UUID>       ids        = batch.stream()
+                                           .map(TransactionDTO::getId)
+                                           .toList();
+        List<BigDecimal> amounts    = batch.stream()
+                                           .map(TransactionDTO::getAmount)
+                                           .toList();
+        List<String>     currencies = batch.stream()
+                                           .map(TransactionDTO::getCurrency)
+                                           .toList();
+        List<LocalDate>  dates      = batch.stream()
+                                           .map(TransactionDTO::getValueDate)
+                                           .toList();
+        List<String>     descs      = batch.stream()
+                                           .map(TransactionDTO::getDescription)
+                                           .toList();
 
         String sql = """
             INSERT INTO transactions
