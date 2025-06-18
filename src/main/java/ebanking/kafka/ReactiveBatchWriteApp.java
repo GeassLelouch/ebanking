@@ -1,3 +1,24 @@
+package ebanking.kafka;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
+
+import reactor.core.publisher.Mono;
+import reactor.core.Disposable;
+
+import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.receiver.KafkaReceiver;
+
+import io.r2dbc.spi.ConnectionFactory;
+import org.springframework.r2dbc.core.DatabaseClient;
+
+import java.util.List;
+import java.util.Map;
+
+import ebanking.dto.TransactionDTO;
+
 @SpringBootApplication
 public class ReactiveBatchWriteApp {
 
