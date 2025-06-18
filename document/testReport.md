@@ -20,6 +20,10 @@ api伺服器也成功運作起來無報錯
 
 呼叫我的交易分頁查詢 API 但token錯誤的話如圖顯示，將會被拒絕呼叫，回傳403
 
+錯誤訊息是
+"Cannot extract username from JWT: 2025-06-17 13:20:30 (Taipei), current time: 2025-06-18 15:10:40 (Taipei)
+
+
 ![測試流程示意圖](../img/Forbidden.jpg)
 
 
