@@ -83,9 +83,9 @@ public class ReactiveBatchWriteApp {
     }
 
     // 4) 批次 UNNEST 寫入
-    private Mono<Integer> batchInsert(DatabaseClient client, List<TransactionDTO> batch) {
+    private Mono<Long> batchInsert(DatabaseClient client, List<TransactionDTO> batch) {
         List<UUID>       ids        = batch.stream()
-                                           .map(TransactionDTO::getId)
+                                           .map(tx -> UUID.fromString(tx.getId()))
                                            .toList();
         List<BigDecimal> amounts    = batch.stream()
                                            .map(TransactionDTO::getAmount)
